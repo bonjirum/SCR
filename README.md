@@ -58,7 +58,7 @@ Il pannello Editor permette il controllo totale sui dati salvati nel `localStora
 <img width="332" height="116" alt="image" src="https://github.com/user-attachments/assets/823b1f1c-1dbb-4562-af2a-30762a25e1ef" />
 
 - **Export:** Esporta il tuo intero database personalizzato in formato `.json`.
-- **Import:** Carica file backup precedentemente creati.
+- **Import:** Carica file backup precedentemente creati. La procedura aggiunge le voci al database che potreste avere già creato, rimuovendo eventuali duplicati.
 - **Default DB:** Carica il database di default attualmente composto da 800+ voci.
 
 ---
