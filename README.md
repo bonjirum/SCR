@@ -1,6 +1,6 @@
 # ⚡ PACK-A-PUNCHLINER
 
-**PACK-A-PUNCHLINER** è un generatore di parole custom, con database personalizzabile, con utilizzo mirato per i cypher freestyle.
+**PACK-A-PUNCHLINER** è un generatore di parole con database personalizzabile, il cui utilizzo è mirato per i cypher freestyle.
 
 ---
 
@@ -59,6 +59,6 @@ Il pannello Editor permette il controllo totale sui dati salvati nel `localStora
 
 - **Export:** Esporta il tuo intero database personalizzato in formato `.json`.
 - **Import:** Carica file backup precedentemente creati.
-- **Default DB:** Ripristina il database di fabbrica (richiede il file `db-argomenti-v1.json`).
+- **Default DB:** Carica il database di default.
 
 ---
