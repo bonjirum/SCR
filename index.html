@@ -338,20 +338,44 @@
             container.innerHTML = [...allTags].sort().map(t => `<button onclick="toggleTag('${t}')" class="px-3 py-1 rounded text-[10px] font-bold border ${activeTags.has(t) ? 'bg-cyan-600 text-white border-cyan-400' : 'bg-slate-900 text-slate-500 border-slate-800'} uppercase transition-all">${t}</button>`).join('');
         }
 
-        function toggleTag(t) { if(activeTags.has(t)) activeTags.delete(t); else activeTags.add(t); renderTags(); }
+        function toggleTag(t) {
+    if(activeTags.has(t)) activeTags.delete(t);
+    else activeTags.add(t);
+    resetDeck(); // Forza la rigenerazione del mazzo con i nuovi filtri
+    renderTags();
+}
 
-        function generate() {
-            const display = document.getElementById('displayArea');
-            const count = parseInt(document.getElementById('wordCount').value);
-            let filtered = activeTags.size > 0 ? words.filter(w => w.tags.some(t => activeTags.has(t.toLowerCase()))) : words;
-            if(filtered.length === 0) return;
-            let results = [];
-            for(let i=0; i<count; i++) {
-                if(currentDeck.length === 0) currentDeck = [...filtered].sort(() => Math.random() - 0.5);
-                results.push(currentDeck.pop().text);
-            }
-            display.innerHTML = results.map(res => `<div class="animate-fade text-4xl md:text-5xl font-extrabold text-white" style="text-shadow: 0 0 10px var(--neon-cyan);">${res}</div>`).join('');
+function generate() {
+    const display = document.getElementById('displayArea');
+    const count = parseInt(document.getElementById('wordCount').value);
+
+    // Filtra le parole in base ai tag attivi
+    let filtered = activeTags.size > 0
+        ? words.filter(w => w.tags.some(t => activeTags.has(t.toLowerCase())))
+        : words;
+
+    if(filtered.length === 0) return;
+
+    let results = [];
+    for(let i=0; i<count; i++) {
+        // Se il mazzo è vuoto O se sono stati cambiati i filtri, ricrealo
+        if(currentDeck.length === 0) {
+            currentDeck = [...filtered].sort(() => Math.random() - 0.5);
         }
+
+        // Estrai l'elemento. Se per errore è undefined (mazzo finito), rigenera
+        let picked = currentDeck.pop();
+        if(!picked) {
+            currentDeck = [...filtered].sort(() => Math.random() - 0.5);
+            picked = currentDeck.pop();
+        }
+        results.push(picked.text);
+    }
+
+    display.innerHTML = results.map(res =>
+        `<div class="animate-fade text-4xl md:text-5xl font-extrabold text-white" style="text-shadow: 0 0 10px var(--neon-cyan);">${res}</div>`
+    ).join('');
+}
 
         function exportData() { const dl = document.createElement('a'); dl.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(words))); dl.setAttribute("download", "backup.json"); dl.click(); }
         function importData(e) { const reader = new FileReader(); reader.onload = (ev) => { words = JSON.parse(ev.target.result); save(); init(); resetDeck(); }; reader.readAsText(e.target.files[0]); }
