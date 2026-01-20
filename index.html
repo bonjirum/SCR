@@ -144,6 +144,11 @@
             color: var(--neon-cyan) !important; outline: none;
         }
 
+        .cursor-edit:hover {
+            background: rgba(0, 255, 242, 0.05);
+            cursor: text;
+        }
+
         .animate-fade { animation: bounce-in 0.3s ease-out; }
         @keyframes bounce-in { 0% { opacity: 0; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
     </style>
@@ -342,29 +347,69 @@
                 const matchesTags = archiveSearchTags.size === 0 || [...archiveSearchTags].every(t => w.tags.some(wt => wt.toLowerCase() === t.toLowerCase()));
                 return matchesText && matchesTags;
             });
+
             const paginatedItems = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
             const allDatabaseTags = [...new Set(words.flatMap(w => w.tags.map(t => t.toLowerCase())))].sort();
+
             tbody.innerHTML = paginatedItems.map((w) => {
+                // Troviamo l'indice reale nell'array originale 'words'
                 const idx = words.findIndex(item => item.text === w.text);
                 const isAdding = editingTagIndex === idx;
+
                 return `
                 <tr class="hover:bg-cyan-900/5 transition">
-                    <td class="p-4 font-bold text-slate-200">${w.text}</td>
+                    <td class="p-4">
+                        <div contenteditable="true"
+                             onblur="updateWordText(${idx}, this.innerText)"
+                             class="font-bold text-slate-200 outline-none focus:text-cyan-400 focus:bg-slate-800/50 px-2 py-1 rounded transition-all cursor-edit"
+                             spellcheck="false">
+                            ${w.text}
+                        </div>
+                    </td>
                     <td class="p-4">
                         <div class="flex flex-wrap gap-1 items-center">
                             ${w.tags.map(t => `<span class="bg-slate-900 text-cyan-600 px-2 py-0.5 rounded text-[9px] uppercase cursor-pointer" onclick="removeTagFromWord(${idx}, '${t}')">${t} ×</span>`).join('')}
                             ${isAdding ? `<select onchange="confirmInlineTag(${idx}, this.value)" class="bg-slate-800 text-cyan-400 text-[10px] rounded"><option value="">+</option>${allDatabaseTags.filter(t => !w.tags.map(wt=>wt.toLowerCase()).includes(t)).map(t => `<option value="${t}">${t.toUpperCase()}</option>`).join('')}</select>` : `<button onclick="editingTagIndex=${idx};renderTable()" class="text-cyan-800 text-xs">+</button>`}
                         </div>
                     </td>
-                    <td class="p-4 text-right"><button onclick="deleteWord(${idx})" class="text-pink-900 hover:text-pink-500 text-[9px] uppercase font-bold">Elimina</button></td>
+                    <td class="p-4 text-right">
+                        <button onclick="deleteWord(${idx})" class="text-pink-900 hover:text-pink-500 text-[9px] uppercase font-bold">Elimina</button>
+                    </td>
                 </tr>`;
             }).join('');
+
             document.getElementById('paginationInfo').innerText = `Pagina ${currentPage} di ${Math.ceil(filtered.length/itemsPerPage) || 1}`;
         }
 
         function confirmInlineTag(idx, val) { if(val) words[idx].tags.push(val); editingTagIndex = null; save(); init(); }
         function removeTagFromWord(wi, t) { words[wi].tags = words[wi].tags.filter(tag => tag !== t); if(words[wi].tags.length === 0) words[wi].tags = ['generale']; save(); init(); }
         function deleteWord(i) { words.splice(i, 1); save(); init(); }
+        function updateWordText(index, newText) {
+            const cleanText = newText.trim();
+            const oldText = words[index].text;
+
+            // Se il testo non è cambiato o è vuoto, ripristina e annulla
+            if (!cleanText || cleanText === oldText) {
+                renderTable();
+                return;
+            }
+
+            // Controllo duplicati: esiste già questo testo in un'ALTRA posizione?
+            const exists = words.some((w, i) => i !== index && w.text.toLowerCase() === cleanText.toLowerCase());
+
+            if (exists) {
+                showNotification("ERRORE: PAROLA GIÀ ESISTENTE");
+                renderTable(); // Forza il refresh per cancellare il testo duplicato appena scritto
+                return;
+            }
+
+            // Aggiorna l'array e salva
+            words[index].text = cleanText;
+            save();
+            // Aggiorniamo i filtri in caso la parola fosse l'unica con quel nome nella dashboard
+            renderTags();
+            showNotification("VOCE AGGIORNATA");
+        }
         function prevPage() { if(currentPage > 1) { currentPage--; renderTable(); } }
         function nextPage() { if(currentPage < Math.ceil(words.length/itemsPerPage)) { currentPage++; renderTable(); } }
 
@@ -516,7 +561,16 @@ function generate() {
             event.target.value = '';
         }
 
-        window.addEventListener('keydown', (e) => { if(e.code === 'Space' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) { e.preventDefault(); generate(); } });
+        window.addEventListener('keydown', (e) => {
+            // Controlla se l'utente sta scrivendo in un input, textarea o un elemento contenteditable
+            const isEditing = [ 'INPUT', 'TEXTAREA' ].includes(document.activeElement.tagName) ||
+                               document.activeElement.isContentEditable;
+
+            if(e.code === 'Space' && !isEditing) {
+                e.preventDefault();
+                generate();
+            }
+        });
         document.getElementById('newTags').addEventListener('input', updateQuickSelect);
         init();
     </script>
