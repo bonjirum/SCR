@@ -4,7 +4,7 @@
 
 ---
 
-## 🚀 Funzionalità Dashboard
+## Funzionalità Dashboard
 
 ### Generazione
 <img width="500" height="92" alt="image" src="https://github.com/user-attachments/assets/eedef478-c680-4fe3-8061-ecbbd458c528" />
