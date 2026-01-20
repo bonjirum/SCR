@@ -45,7 +45,7 @@ Il pannello Editor permette il controllo totale sui dati salvati nel `localStora
 - **Tag:** Seleziona i tag esistenti tramite i pulsanti rapidi per assegnarli velocemente alle nuove voci, oppure inseriscili manualmente nel box di testo dedicato.
 
 ### Gestione Archivio (Tabella)
-<img width="1129" height="404" alt="image" src="https://github.com/user-attachments/assets/3f3b89ab-c1f1-42da-858a-98665a480857" />
+<img width="1127" height="472" alt="image" src="https://github.com/user-attachments/assets/a39f5d4d-79ab-4dd8-9c49-46b58049a3f5" />
 
 - **Ricerca Intelligente:** Barra di ricerca testuale e filtri per tag per trovare voci specifiche in database estesi.
 - **Editing Dinamico:** - Rimuovi tag cliccando sulla `×` accanto ad essi.
@@ -59,6 +59,6 @@ Il pannello Editor permette il controllo totale sui dati salvati nel `localStora
 
 - **Export:** Esporta il tuo intero database personalizzato in formato `.json`.
 - **Import:** Carica file backup precedentemente creati.
-- **Default DB:** Carica il database di default.
+- **Default DB:** Carica il database di default attualmente composto da 800+ voci.
 
 ---
