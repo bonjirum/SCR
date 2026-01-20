@@ -1,6 +1,6 @@
 # ⚡ PACK-A-PUNCHLINER
 
-**PACK-A-PUNCHLINER** è un generatore di parole custom, con database personalizzabile, con utilizzo mirato per i cypher freestyle.
+**PACK-A-PUNCHLINER** è un generatore di parole con database personalizzabile, il cui utilizzo è mirato per i cypher freestyle.
 
 ---
 
